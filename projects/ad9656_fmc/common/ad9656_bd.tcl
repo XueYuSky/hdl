@@ -11,12 +11,13 @@ source $ad_hdl_dir/library/jesd204/scripts/jesd204.tcl
 
 # adc peripherals
 
-ad_ip_instance axi_adxcvr axi_ad9656_rx_xcvr
-ad_ip_parameter axi_ad9656_rx_xcvr CONFIG.NUM_OF_LANES $RX_NUM_OF_LANES
-ad_ip_parameter axi_ad9656_rx_xcvr CONFIG.QPLL_ENABLE 1
-ad_ip_parameter axi_ad9656_rx_xcvr CONFIG.TX_OR_RX_N 0
-ad_ip_parameter axi_ad9656_rx_xcvr CONFIG.SYS_CLK_SEL 0
-ad_ip_parameter axi_ad9656_rx_xcvr CONFIG.OUT_CLK_SEL 4
+ad_ip_instance axi_adxcvr axi_ad9656_rx_xcvr [list \
+  NUM_OF_LANES $RX_NUM_OF_LANES \
+  QPLL_ENABLE 1 \
+  TX_OR_RX_N 0 \
+  SYS_CLK_SEL 0 \
+  OUT_CLK_SEL 4 \
+  ]
 
 adi_axi_jesd204_rx_create axi_ad9656_rx_jesd $RX_NUM_OF_LANES
 
@@ -31,30 +32,30 @@ adi_tpl_jesd204_rx_create rx_ad9656_tpl_core $RX_NUM_OF_LANES \
                                                $RX_SAMPLES_PER_FRAME \
                                                $RX_SAMPLE_WIDTH
 
-ad_ip_instance axi_dmac axi_ad9656_rx_dma
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.DMA_TYPE_SRC 2
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.DMA_TYPE_DEST 0
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.CYCLIC 0
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.SYNC_TRANSFER_START 1
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.DMA_2D_TRANSFER 0
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.DMA_DATA_WIDTH_SRC [expr 32*$RX_NUM_OF_LANES]
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.MAX_BYTES_PER_BURST 256
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.AXI_SLICE_DEST false
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.AXI_SLICE_SRC false
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.DMA_DATA_WIDTH_DEST 128
-ad_ip_parameter axi_ad9656_rx_dma CONFIG.FIFO_SIZE 32
+ad_ip_instance axi_dmac axi_ad9656_rx_dma [list \
+  DMA_TYPE_SRC 2 \
+  DMA_TYPE_DEST 0 \
+  CYCLIC 0 \
+  SYNC_TRANSFER_START 1 \
+  DMA_2D_TRANSFER 0 \
+  DMA_DATA_WIDTH_SRC [expr 32*$RX_NUM_OF_LANES] \
+  MAX_BYTES_PER_BURST 256 \
+  AXI_SLICE_DEST false \
+  AXI_SLICE_SRC false \
+  DMA_DATA_WIDTH_DEST 128 \
+  FIFO_SIZE 32 \
+  ]
 
 # common cores
 
-ad_ip_instance util_adxcvr util_ad9656_xcvr
-ad_ip_parameter util_ad9656_xcvr CONFIG.RX_NUM_OF_LANES $RX_NUM_OF_LANES
-ad_ip_parameter util_ad9656_xcvr CONFIG.TX_NUM_OF_LANES 0
-ad_ip_parameter util_ad9656_xcvr CONFIG.CPLL_FBDIV 2
-ad_ip_parameter util_ad9656_xcvr CONFIG.CPLL_FBDIV_4_5 5
-ad_ip_parameter util_ad9656_xcvr CONFIG.RX_OUT_DIV 1
-ad_ip_parameter util_ad9656_xcvr CONFIG.RX_CLK25_DIV 5
-ad_ip_parameter util_ad9656_xcvr CONFIG.RX_PMA_CFG 0x001E7080
-ad_ip_parameter util_ad9656_xcvr CONFIG.RX_CDR_CFG 0x0b000023ff10400020
+ad_ip_instance util_adxcvr util_ad9656_xcvr [list \
+  RX_NUM_OF_LANES $RX_NUM_OF_LANES \
+  TX_NUM_OF_LANES 0 \
+  CPLL_FBDIV 2 \
+  CPLL_FBDIV_4_5 5 \
+  RX_OUT_DIV 1 \
+  RX_CLK25_DIV 5 \
+  ]
 
 # xcvr interfaces
 
@@ -111,9 +112,4 @@ ad_mem_hp0_interconnect $sys_cpu_clk axi_ad9656_rx_xcvr/m_axi
 
 ad_mem_hp2_interconnect $sys_dma_clk sys_ps7/S_AXI_HP1
 ad_mem_hp2_interconnect $sys_dma_clk axi_ad9656_rx_dma/m_dest_axi
-
-# interrupts
-
-ad_cpu_interrupt ps-10 mb-15 axi_ad9656_rx_jesd/irq
-ad_cpu_interrupt ps-13 mb-12 axi_ad9656_rx_dma/irq
 
